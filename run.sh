@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/bash 
 
-docker run -p 8500:8500 -v $(pwd)/models/mnist:/models/mnist -e MODEL_NAME=mnist -t tensorflow/serving &
+tensorflow_model_server --port=8500 --model_config_file=./etc/models.conf &
