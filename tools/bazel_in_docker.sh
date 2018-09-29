@@ -66,6 +66,7 @@ RUN_OPTS=(--rm -it --network=host)
 if [[ "$1" = "bazel"* ]]; then
   CMD="sh -c '$(get_bazel_cmd) $@'"
   RUN_OPTS+=("-v $(pwd):$(pwd)")
+  RUN_OPTS+=("-v /tmp:/tmp")
 else
   CMD="$@"
 fi
