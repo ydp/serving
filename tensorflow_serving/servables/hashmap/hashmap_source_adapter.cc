@@ -39,8 +39,9 @@ Status LoadHashmapFromFile(const string& path,
   hashmap->reset(new Hashmap);
   switch (format) {
     case HashmapSourceAdapterConfig::SIMPLE_CSV: {
+      const string fpath = io::JoinPath(path, "data.csv");
       std::unique_ptr<RandomAccessFile> file;
-      TF_RETURN_IF_ERROR(Env::Default()->NewRandomAccessFile(path, &file));
+      TF_RETURN_IF_ERROR(Env::Default()->NewRandomAccessFile(fpath, &file));
       const size_t kBufferSizeBytes = 262144;
       io::InputBuffer in(file.get(), kBufferSizeBytes);
       string line;
@@ -88,7 +89,6 @@ class HashmapSourceAdapterCreator {
         const HashmapSourceAdapterConfig& config,
         std::unique_ptr<SourceAdapter<StoragePath, std::unique_ptr<Loader>>>*
             adapter) {
-      LOG(INFO) << "create HashmapSourceAdapter...";
       adapter->reset(new HashmapSourceAdapter(config));
       return Status::OK();
     }

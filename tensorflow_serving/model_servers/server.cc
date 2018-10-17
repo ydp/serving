@@ -126,7 +126,6 @@ std::vector<GrpcChannelArgument> parseGrpcChannelArgs(
 tensorflow::serving::PlatformConfigMap ParsePlatformConfigMap(
     const string& file) {
   tensorflow::serving::PlatformConfigMap platform_config_map;
-  LOG(INFO) << "ParsePlatformConfigMap " << file;
   TF_CHECK_OK(ParseProtoTextFile(file, &platform_config_map));
   for (auto& config : *platform_config_map.mutable_platform_configs()) {
     LOG(INFO) << "config platform " << config.first;
