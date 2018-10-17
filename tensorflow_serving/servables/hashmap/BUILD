@@ -58,4 +58,7 @@ serving_proto_library(
     name = "hashmap_source_adapter_proto",
     srcs = ["hashmap_source_adapter.proto"],
     cc_api_version = 2,
+    visibility = [
+        "//visibility:public",
+    ],
 )

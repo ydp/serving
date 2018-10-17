@@ -41,6 +41,24 @@ PlatformConfigMap CreateTensorFlowPlatformConfigMap(
   }
   (*(*platform_config_map.mutable_platform_configs())[kTensorFlowModelPlatform]
         .mutable_source_adapter_config()) = source_adapter_config;
+
+  HashmapSourceAdapterConfig hashmap_source_adapter_config;
+  hashmap_source_adapter_config.set_format(HashmapSourceAdapterConfig::SIMPLE_CSV);
+  source_adapter_config.PackFrom(hashmap_source_adapter_config);
+  (*(*platform_config_map.mutable_platform_configs())[kHashmapModelPlatform]
+        .mutable_source_adapter_config()) = source_adapter_config;
+
+  return platform_config_map;
+}
+
+PlatformConfigMap CreateHashmapPlatformConfigMap(HashmapSourceAdapterConfig_Format format) {
+  PlatformConfigMap platform_config_map;
+  ::google::protobuf::Any source_adapter_config;
+  HashmapSourceAdapterConfig hashmap_source_adapter_config;
+  hashmap_source_adapter_config.set_format(format);
+  source_adapter_config.PackFrom(hashmap_source_adapter_config);
+  (*(*platform_config_map.mutable_platform_configs())[kHashmapModelPlatform]
+        .mutable_source_adapter_config()) = source_adapter_config;
   return platform_config_map;
 }
 

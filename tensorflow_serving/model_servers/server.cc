@@ -43,6 +43,7 @@ limitations under the License.
 #include "tensorflow_serving/model_servers/model_platform_types.h"
 #include "tensorflow_serving/model_servers/platform_config_util.h"
 #include "tensorflow_serving/model_servers/server_core.h"
+#include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.pb.h"
 #include "tensorflow_serving/servables/tensorflow/session_bundle_config.pb.h"
 
 namespace tensorflow {
@@ -61,8 +62,10 @@ tensorflow::Status ParseProtoTextFile(const string& file,
                        file_data->length());
   if (tensorflow::protobuf::TextFormat::ParseFromString(file_data_str,
                                                         message)) {
+    LOG(INFO) << "parse ok " << file;
     return tensorflow::Status::OK();
   } else {
+    LOG(INFO) << "parse error " << file;
     return tensorflow::errors::InvalidArgument("Invalid protobuf file: '", file,
                                                "'");
   }
@@ -123,7 +126,14 @@ std::vector<GrpcChannelArgument> parseGrpcChannelArgs(
 tensorflow::serving::PlatformConfigMap ParsePlatformConfigMap(
     const string& file) {
   tensorflow::serving::PlatformConfigMap platform_config_map;
+  LOG(INFO) << "ParsePlatformConfigMap " << file;
   TF_CHECK_OK(ParseProtoTextFile(file, &platform_config_map));
+  for (auto& config : *platform_config_map.mutable_platform_configs()) {
+    LOG(INFO) << "config platform " << config.first;
+    if (config.first == "hashmap") {
+      CreateHashmapPlatformConfigMap(HashmapSourceAdapterConfig::SIMPLE_CSV);
+    }
+  }
   return platform_config_map;
 }
 

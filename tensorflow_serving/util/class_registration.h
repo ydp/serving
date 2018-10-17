@@ -233,6 +233,7 @@ class ClassRegistry {
         config.GetDescriptor()->full_name();
     auto* factory = LookupFromMap(config_proto_message_type);
     if (factory == nullptr) {
+      LOG(INFO) << "factory is nullptr " << config_proto_message_type;
       return errors::InvalidArgument(
           "Couldn't find factory for config proto message type ",
           config_proto_message_type, "\nconfig=", config.DebugString());
@@ -259,6 +260,7 @@ class ClassRegistry {
         protobuf::DescriptorPool::generated_pool()->FindMessageTypeByName(
             full_type_name);
     if (descriptor == nullptr) {
+      LOG(INFO) << "descriptor is nullptr " << full_type_name;
       return errors::Internal(
           "Unable to find compiled-in proto descriptor of type ",
           full_type_name);
@@ -279,18 +281,19 @@ class ClassRegistry {
   // map.
   class MapInserter {
    public:
-    MapInserter(const string& config_proto_message_type, FactoryType* factory) {
-      InsertIntoMap(config_proto_message_type, factory);
+    MapInserter(const string& config_proto_message_type, FactoryType* factory, int cnt) {
+      InsertIntoMap(config_proto_message_type, factory, cnt);
     }
   };
 
  private:
   // Inserts a key/value pair into the factory map.
   static void InsertIntoMap(const string& config_proto_message_type,
-                            FactoryType* factory) {
+                            FactoryType* factory, int cnt) {
     LockableFactoryMap* global_map = GlobalFactoryMap();
     {
       mutex_lock lock(global_map->mu);
+      LOG(INFO) << "InsertIntoMap " << config_proto_message_type << ", " << cnt;
       global_map->factory_map.insert({config_proto_message_type, factory});
     }
   }
@@ -359,7 +362,7 @@ class ClassRegistry {
       register_class_##cnt(                                                \
           (config_proto::default_instance().GetDescriptor()->full_name()), \
           (new ::tensorflow::serving::internal::ClassRegistrationFactory<  \
-              BaseClass, ClassCreator, config_proto, ##__VA_ARGS__>));
+              BaseClass, ClassCreator, config_proto, ##__VA_ARGS__>), cnt);
 
 }  // namespace serving
 }  // namespace tensorflow

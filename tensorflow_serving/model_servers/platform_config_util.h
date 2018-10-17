@@ -17,6 +17,7 @@ limitations under the License.
 #define TENSORFLOW_SERVING_MODEL_SERVERS_PLATFORM_CONFIG_UTIL_H_
 
 #include "tensorflow_serving/config/platform_config.pb.h"
+#include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.pb.h"
 #include "tensorflow_serving/servables/tensorflow/session_bundle_config.pb.h"
 
 namespace tensorflow {
@@ -28,6 +29,8 @@ namespace serving {
 // on 'use_saved_model' using 'session_bundle_config'.
 PlatformConfigMap CreateTensorFlowPlatformConfigMap(
     const SessionBundleConfig& session_bundle_config, bool use_saved_model);
+
+PlatformConfigMap CreateHashmapPlatformConfigMap(HashmapSourceAdapterConfig_Format format);
 
 }  // namespace serving
 }  // namespace tensorflow

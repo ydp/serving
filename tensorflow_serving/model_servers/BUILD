@@ -44,6 +44,7 @@ cc_library(
     deps = [
         "//tensorflow_serving/config:platform_config_proto",
         "//tensorflow_serving/model_servers:model_platform_types",
+        "//tensorflow_serving/servables/hashmap:hashmap_source_adapter_proto",
         "//tensorflow_serving/servables/tensorflow:saved_model_bundle_source_adapter_proto",
         "//tensorflow_serving/servables/tensorflow:session_bundle_config_proto",
         "//tensorflow_serving/servables/tensorflow:session_bundle_source_adapter_proto",
@@ -72,6 +73,7 @@ cc_library(
         "//tensorflow_serving/core:source_adapter",
         "//tensorflow_serving/core:storage_path",
         "//tensorflow_serving/resources:resource_values",
+        "//tensorflow_serving/servables/hashmap:hashmap_source_adapter",
         "//tensorflow_serving/servables/tensorflow:saved_model_bundle_source_adapter",
         "//tensorflow_serving/servables/tensorflow:session_bundle_source_adapter",
         "//tensorflow_serving/servables/tensorflow:session_bundle_source_adapter_proto",
@@ -343,6 +345,7 @@ cc_library(
         "@org_tensorflow//tensorflow/core/platform/cloud:gcs_file_system",
         "@org_tensorflow//tensorflow/core/platform/hadoop:hadoop_file_system",
         "@org_tensorflow//tensorflow/core/platform/s3:s3_file_system",
+        "//tensorflow_serving/servables/hashmap:hashmap_source_adapter",
     ],
 )
 

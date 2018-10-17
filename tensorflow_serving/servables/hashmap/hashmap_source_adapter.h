@@ -27,6 +27,8 @@ limitations under the License.
 namespace tensorflow {
 namespace serving {
 
+void loadHashmapServable();
+
 // A SourceAdapter for string-string hashmaps. It takes storage paths that give
 // the locations of serialized hashmaps (in the format indicated in the config)
 // and produces loaders for them.
@@ -38,6 +40,8 @@ class HashmapSourceAdapter final
   ~HashmapSourceAdapter() override;
 
  private:
+  friend class HashmapSourceAdapterCreator;
+
   TF_DISALLOW_COPY_AND_ASSIGN(HashmapSourceAdapter);
 };
 

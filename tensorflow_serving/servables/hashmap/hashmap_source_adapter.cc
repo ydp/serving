@@ -64,6 +64,11 @@ Status LoadHashmapFromFile(const string& path,
 
 }  // namespace
 
+
+void loadHashmapServable() {
+  LOG(INFO) << "load hashmap servable...";
+}
+
 HashmapSourceAdapter::HashmapSourceAdapter(
     const HashmapSourceAdapterConfig& config)
     : SimpleLoaderSourceAdapter<StoragePath, Hashmap>(
@@ -75,6 +80,22 @@ HashmapSourceAdapter::HashmapSourceAdapter(
                                     Hashmap>::EstimateNoResources()) {}
 
 HashmapSourceAdapter::~HashmapSourceAdapter() { Detach(); }
+
+// register this source adapter
+class HashmapSourceAdapterCreator {
+  public:
+    static Status Create(
+        const HashmapSourceAdapterConfig& config,
+        std::unique_ptr<SourceAdapter<StoragePath, std::unique_ptr<Loader>>>*
+            adapter) {
+      LOG(INFO) << "create HashmapSourceAdapter...";
+      adapter->reset(new HashmapSourceAdapter(config));
+      return Status::OK();
+    }
+};
+
+REGISTER_STORAGE_PATH_SOURCE_ADAPTER(HashmapSourceAdapterCreator,
+                                     HashmapSourceAdapterConfig);
 
 }  // namespace serving
 }  // namespace tensorflow

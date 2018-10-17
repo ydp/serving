@@ -26,6 +26,7 @@ limitations under the License.
 #include "tensorflow_serving/core/load_servables_fast.h"
 #include "tensorflow_serving/model_servers/model_platform_types.h"
 #include "tensorflow_serving/resources/resource_values.h"
+#include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.h"
 #include "tensorflow_serving/servables/tensorflow/saved_model_bundle_source_adapter.h"
 #include "tensorflow_serving/servables/tensorflow/session_bundle_source_adapter.h"
 #include "tensorflow_serving/servables/tensorflow/session_bundle_source_adapter.pb.h"
@@ -539,6 +540,8 @@ Status ServerCore::CreateAdapter(
   }
   const ::google::protobuf::Any& adapter_config =
       config_it->second.source_adapter_config();
+  // This is a registry registered in simple source adapter, which handle class registry by util/class_registry.h
+  // check method in class_registry.h
   const tensorflow::Status status =
       StoragePathSourceAdapterRegistry::CreateFromAny(adapter_config, adapter);
   if (!status.ok()) {

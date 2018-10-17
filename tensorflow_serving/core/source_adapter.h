@@ -98,6 +98,8 @@ using StoragePathSourceAdapter =
     SourceAdapter<StoragePath, std::unique_ptr<Loader>>;
 DEFINE_CLASS_REGISTRY(StoragePathSourceAdapterRegistry,
                       StoragePathSourceAdapter);
+// register source adatper by REGISTER_CLASS in util/class_registry.h
+// call this method in  sourceadpater.cc
 #define REGISTER_STORAGE_PATH_SOURCE_ADAPTER(ClassCreator, ConfigProto)      \
   REGISTER_CLASS(StoragePathSourceAdapterRegistry, StoragePathSourceAdapter, \
                  ClassCreator, ConfigProto);
