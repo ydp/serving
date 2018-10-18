@@ -1,5 +1,14 @@
 workspace(name = "tf_serving")
 
+git_repository(
+  name = "com_github_brpc_brpc",
+  commit = "ede2bf595915fcb9b5285ae8b6eb7ab46a5bac4f",
+  remote = "https://github.com/brpc/brpc",
+)
+load("@com_github_brpc_brpc//:bazel/workspace.bzl", "brpc_workspace")
+brpc_workspace()
+load("@com_github_brpc_brpc//:bazel/brpc.bzl", "brpc_proto_library")
+
 # To update TensorFlow to a new revision.
 # 1. Update the 'git_commit' args below to include the new git hash.
 # 2. Get the sha256 hash of the archive with a command such as...
