@@ -52,7 +52,7 @@ HttpRestApiHandler::HttpRestApiHandler(const RunOptions& run_options,
       core_(core),
       predictor_(new TensorflowPredictor(true /* use_saved_model */)),
       prediction_api_regex_(
-          R"((?i)/v1/models/([^/:]+)(?:/versions/(\d+))?:(classify|regress|predict))"),
+          R"((?i)/v1/models/([^/:]+)(?:/versions/(\d+))?:(classify|regress|predict|lookup))"),
       modelstatus_api_regex_(
           R"((?i)/v1/models(?:/([^/:]+))?(?:/versions/(\d+))?)") {}
 
@@ -106,6 +106,9 @@ Status HttpRestApiHandler::ProcessRequest(
                                      output);
     } else if (method == "predict") {
       status = ProcessPredictRequest(model_name, model_version, request_body,
+                                     output);
+    } else if (method == "lookup") {
+      status = ProcessLookupRequest(model_name, model_version, request_body,
                                      output);
     }
   } else if (http_method == "GET" &&
@@ -182,6 +185,14 @@ Status HttpRestApiHandler::ProcessPredictRequest(
   TF_RETURN_IF_ERROR(
       predictor_->Predict(run_options_, core_, request, &response));
   TF_RETURN_IF_ERROR(MakeJsonFromTensors(response.outputs(), format, output));
+  return Status::OK();
+}
+
+Status HttpRestApiHandler::ProcessLookupRequest(
+    const absl::string_view model_name,
+    const absl::optional<int64>& model_version,
+    const absl::string_view request_body, string* output) {
+  output->assign(request_body.data());
   return Status::OK();
 }
 

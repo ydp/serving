@@ -97,6 +97,10 @@ class HttpRestApiHandler {
                                const absl::optional<int64>& model_version,
                                const absl::string_view request_body,
                                string* output);
+  Status ProcessLookupRequest(const absl::string_view model_name,
+                               const absl::optional<int64>& model_version,
+                               const absl::string_view request_body,
+                               string* output);
   Status ProcessModelStatusRequest(const absl::string_view model_name,
                                    const absl::string_view model_version_str,
                                    string* output);
