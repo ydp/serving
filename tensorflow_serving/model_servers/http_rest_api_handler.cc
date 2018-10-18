@@ -35,6 +35,7 @@ limitations under the License.
 #include "tensorflow_serving/servables/tensorflow/predict_impl.h"
 #include "tensorflow_serving/servables/tensorflow/regression_service.h"
 #include "tensorflow_serving/util/json_tensor.h"
+#include "tensorflow_serving/apis/model.pb.h"
 
 namespace tensorflow {
 namespace serving {
@@ -192,7 +193,19 @@ Status HttpRestApiHandler::ProcessLookupRequest(
     const absl::string_view model_name,
     const absl::optional<int64>& model_version,
     const absl::string_view request_body, string* output) {
-  output->assign(request_body.data());
+  ModelSpec model_spec;
+  model_spec.set_name(string(model_name));
+  if (model_version.has_value()) {
+    model_spec.mutable_version()->set_value(model_version.value());
+  }
+  ServableHandle<std::unordered_map<string, string>> bundle;
+  TF_RETURN_IF_ERROR(core_->GetServableHandle(model_spec, &bundle));
+  std::unordered_map<std::string, std::string>::const_iterator got = bundle->find(request_body.data());
+  if (got == bundle->end()) {
+    output->assign(string("None"));
+  } else {
+    output->assign(got->second);
+  }
   return Status::OK();
 }
 
