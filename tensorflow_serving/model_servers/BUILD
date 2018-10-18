@@ -298,6 +298,24 @@ TENSORFLOW_DEPS = [
     "//tensorflow_serving/servables/tensorflow:predict_impl",
 ]
 
+BRPC_COPTS = [
+    "-D__STDC_FORMAT_MACROS",
+    "-DBTHREAD_USE_FAST_PTHREAD_MUTEX",
+    "-D__const__=",
+    "-D_GNU_SOURCE",
+    "-DUSE_SYMBOLIZE",
+    "-DNO_TCMALLOC",
+    "-D__STDC_LIMIT_MACROS",
+    "-D__STDC_CONSTANT_MACROS",
+    "-fPIC",
+    "-Wno-unused-parameter",
+    "-fno-omit-frame-pointer",
+    "-DGFLAGS_NS=google",
+] + select({
+    "@com_github_brpc_brpc//:with_glog": ["-DBRPC_WITH_GLOG=1"],
+    "//conditions:default": ["-DBRPC_WITH_GLOG=0"],
+})
+
 cc_library(
     name = "server_lib",
     srcs = [
@@ -311,6 +329,8 @@ cc_library(
         ":platform_config_util",
         ":prediction_service_impl",
         ":server_core",
+        "//brpc:echo_c++_service",
+        "@com_github_brpc_brpc//:brpc",
         ":grpc_status_util",
         ":model_service_impl",
         "@protobuf_archive//:cc_wkt_protos",

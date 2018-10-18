@@ -23,3 +23,4 @@ tensorflow_serving/config/platform_config_pb2.py
 tensorflow_serving/servables/__init__.py
 tensorflow_serving/servables/hashmap/__init__.py
 tensorflow_serving/servables/hashmap/hashmap_source_adapter_pb2.py
+rpc_data/

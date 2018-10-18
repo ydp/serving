@@ -28,6 +28,30 @@ cc_proto_library(
     deps = [
         ":echo_c++_proto",
     ],
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library(
+    name = "echo_c++_service",
+    hdrs = [
+        "echo_c++/echo_service.h",
+    ],
+    srcs = [
+        "echo_c++/echo_service.cpp",
+    ],
+    includes = [
+        "echo_c++",
+    ],
+    deps = [
+        ":cc_echo_c++_proto",
+        "@com_github_brpc_brpc//:brpc",
+    ],
+    visibility = [
+        "//visibility:public",
+    ],
+    copts = COPTS,
 )
 
 cc_binary(
@@ -39,7 +63,8 @@ cc_binary(
         "echo_c++",
     ],
     deps = [
-        ":cc_echo_c++_proto",
+        #":cc_echo_c++_proto",
+        ":echo_c++_service",
         "@com_github_brpc_brpc//:brpc",
     ],
     copts = COPTS,

@@ -318,6 +318,30 @@ Status Server::BuildAndStart(const Options& server_options) {
                  << "Skipped exporting HTTP/REST API.";
     }
   }
+
+  if (server_options.brpc_port != 0) {
+    brpc_server_ = absl::make_unique<brpc::Server>();
+    echo_service_ = absl::make_unique<example::EchoServiceImpl>();
+    // note: service should not be removed before server stopped
+    // here: https://github.com/brpc/brpc/issues/253
+    if (brpc_server_->AddService(echo_service_.get(),
+                              brpc::SERVER_DOESNT_OWN_SERVICE) != 0) {
+      LOG(INFO) << "Failed to add brpc service";  
+      return tensorflow::errors::Internal("Failed to add brpc service");
+    } else {
+      brpc::ServerOptions brpc_options;
+      brpc_options.idle_timeout_sec = -1;
+      if (brpc_server_->Start(server_options.brpc_port, &brpc_options) != 0) {
+        LOG(INFO) << "Failed to start brpc server at port "
+                   << server_options.brpc_port;
+        return tensorflow::errors::Internal("Failed to start brpc server at port");
+      } else {
+        LOG(INFO) << "brpc server start at port "
+                  << server_options.brpc_port << " ...";
+      }
+    }
+  }
+  
   return Status::OK();
 }
 
@@ -327,6 +351,9 @@ void Server::WaitForTermination() {
   }
   if (grpc_server_ != nullptr) {
     grpc_server_->Wait();
+  }
+  if (brpc_server_ != nullptr) {
+    brpc_server_->RunUntilAskedToQuit();
   }
 }
 

@@ -27,6 +27,10 @@ limitations under the License.
 #include "tensorflow_serving/model_servers/prediction_service_impl.h"
 #include "tensorflow_serving/model_servers/server_core.h"
 
+#include <brpc/server.h>
+#include "brpc/echo_c++/echo_service.h"
+
+
 namespace tensorflow {
 namespace serving {
 namespace main {
@@ -39,6 +43,11 @@ class Server {
     //
     tensorflow::int32 grpc_port = 8500;
     tensorflow::string grpc_channel_arguments;
+
+    //
+    // brpc Server options
+    // 
+    tensorflow::int32 brpc_port = 0;
 
     //
     // HTTP Server options.
@@ -90,6 +99,8 @@ class Server {
   std::unique_ptr<PredictionServiceImpl> prediction_service_;
   std::unique_ptr<::grpc::Server> grpc_server_;
   std::unique_ptr<net_http::HTTPServerInterface> http_server_;
+  std::unique_ptr<brpc::Server> brpc_server_;
+  std::unique_ptr<example::EchoServiceImpl> echo_service_;
 };
 
 }  // namespace main

@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
                        "Port to listen on for HTTP/REST API. If set to zero "
                        "HTTP/REST API will not be exported. This port must be "
                        "different than the one specified in --port."),
+      tensorflow::Flag("brpc_port", &options.brpc_port,
+                       "Port to listen on for brpc API"),
       tensorflow::Flag("rest_api_num_threads", &options.http_num_threads,
                        "Number of threads for HTTP/REST API processing. If not "
                        "set, will be auto set based on number of CPUs."),
