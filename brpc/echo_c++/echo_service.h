@@ -20,6 +20,9 @@
 //#include <butil/logging.h>
 #include <brpc/server.h>
 #include "brpc/echo_c++/echo.pb.h"
+#include <brpc/thrift_message.h>
+#include <brpc/thrift_service.h>
+#include "brpc/echo_c++/gen-cpp/echo_types.h"
 
 // Your implementation of example::EchoService
 // Notice that implementing brpc::Describable grants the ability to put
@@ -34,6 +37,21 @@ public:
                       ::example::EchoResponse* response,
                       ::google::protobuf::Closure* done);
 
+};
+
+class Echo2ServiceImpl : public brpc::ThriftService {
+public:
+    Echo2ServiceImpl();
+    virtual ~Echo2ServiceImpl();
+    void ProcessThriftFramedRequest(brpc::Controller* cntl,
+                                    brpc::ThriftFramedMessage* req,
+                                    brpc::ThriftFramedMessage* res,
+                                    google::protobuf::Closure* done);
+
+    void Echo2(brpc::Controller* cntl,
+              const example::Echo2Request* req,
+              example::Echo2Response* res,
+              google::protobuf::Closure* done);
 };
 
 }  // namespace example

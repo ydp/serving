@@ -21,4 +21,38 @@ void EchoServiceImpl::Echo(::google::protobuf::RpcController* cntl_base,
     cntl->response_attachment().append(cntl->request_attachment());
 }
 
+
+Echo2ServiceImpl::Echo2ServiceImpl() {
 }
+
+Echo2ServiceImpl::~Echo2ServiceImpl(){
+}
+
+void Echo2ServiceImpl::ProcessThriftFramedRequest(brpc::Controller* cntl,
+                                    brpc::ThriftFramedMessage* req,
+                                    brpc::ThriftFramedMessage* res,
+                                    google::protobuf::Closure* done) {
+        // Dispatch calls to different methods
+        if (cntl->thrift_method_name() == "Echo2") {
+            return Echo2(cntl, req->Cast<example::Echo2Request>(),
+                        res->Cast<example::Echo2Response>(), done);
+        } else {
+            cntl->SetFailed(brpc::ENOMETHOD, "Fail to find method=%s",
+                            cntl->thrift_method_name().c_str());
+            done->Run();
+        }
+}
+
+void Echo2ServiceImpl::Echo2(brpc::Controller* cntl,
+              const example::Echo2Request* req,
+              example::Echo2Response* res,
+              google::protobuf::Closure* done) {
+        // This object helps you to call done->Run() in RAII style. If you need
+        // to process the request asynchronously, pass done_guard.release().
+        brpc::ClosureGuard done_guard(done);
+
+        res->data = req->data + " (processed)";
+}
+
+}
+

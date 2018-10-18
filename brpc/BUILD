@@ -37,9 +37,11 @@ cc_library(
     name = "echo_c++_service",
     hdrs = [
         "echo_c++/echo_service.h",
+        "echo_c++/gen-cpp/echo_types.h",
     ],
     srcs = [
         "echo_c++/echo_service.cpp",
+        "echo_c++/gen-cpp/echo_types.cpp",
     ],
     includes = [
         "echo_c++",
@@ -52,6 +54,10 @@ cc_library(
         "//visibility:public",
     ],
     copts = COPTS,
+    linkopts = [
+      "-lthriftnb",
+      "-lthrift",
+    ],
 )
 
 cc_binary(

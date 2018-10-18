@@ -331,6 +331,7 @@ Status Server::BuildAndStart(const Options& server_options) {
     } else {
       brpc::ServerOptions brpc_options;
       brpc_options.idle_timeout_sec = -1;
+      brpc_options.thrift_service = new example::Echo2ServiceImpl;
       if (brpc_server_->Start(server_options.brpc_port, &brpc_options) != 0) {
         LOG(INFO) << "Failed to start brpc server at port "
                    << server_options.brpc_port;
