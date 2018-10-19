@@ -50,7 +50,7 @@ void Echo2ServiceImpl::Echo2(brpc::Controller* cntl,
         // This object helps you to call done->Run() in RAII style. If you need
         // to process the request asynchronously, pass done_guard.release().
         brpc::ClosureGuard done_guard(done);
-
+        LOG(INFO) << req->data;
         res->data = req->data + " (processed)";
 }
 

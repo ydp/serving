@@ -90,3 +90,19 @@ cc_binary(
     ],
     copts = COPTS,
 )
+
+cc_binary(
+    name = "thrift_echo_client",
+    srcs = [
+        "echo_c++/thrift_client.cpp",
+        "echo_c++/gen-cpp/echo_types.cpp",
+    ],
+    includes = [
+        "echo_c++",
+    ],
+    deps = [
+        ":cc_echo_c++_proto",
+        "@com_github_brpc_brpc//:brpc",
+    ],
+    copts = COPTS,
+)
