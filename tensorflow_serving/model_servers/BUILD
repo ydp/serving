@@ -318,6 +318,52 @@ BRPC_COPTS = [
 })
 
 cc_library(
+    name = "thrift_service",
+    hdrs = [
+        "thrift_service.h",
+        "gen-cpp/ServiceCommonInterface.h",
+        "gen-cpp/ServiceCommonInterface_types.h",
+        "gen-cpp/ServiceCommonInterface_constants.h",
+        "gen-cpp/ServiceClassifyInterface.h",
+        "gen-cpp/ServiceClassifyInterface_types.h",
+        "gen-cpp/ServiceClassifyInterface_constants.h",
+    ],
+    srcs = [
+        "thrift_service.cc",
+        "gen-cpp/ServiceCommonInterface.cpp",
+        "gen-cpp/ServiceCommonInterface_types.cpp",
+        "gen-cpp/ServiceCommonInterface_constants.cpp",
+        "gen-cpp/ServiceClassifyInterface.cpp",
+        "gen-cpp/ServiceClassifyInterface_types.cpp",
+        "gen-cpp/ServiceClassifyInterface_constants.cpp",
+    ],
+    deps = [
+        "@com_github_brpc_brpc//:brpc",
+    ],
+    visibility = [
+        "//visibility:public",
+    ],
+    copts = BRPC_COPTS,
+    linkopts = [
+      "-lthriftnb",
+      "-lthrift",
+    ],
+)
+
+
+cc_binary(
+    name = "thrift_service_client",
+    srcs = [
+        "thrift_client.cc",
+    ],
+    deps = [
+        ":thrift_service",
+        "@com_github_brpc_brpc//:brpc",
+    ],
+    copts = BRPC_COPTS,
+)
+
+cc_library(
     name = "server_lib",
     srcs = [
         "server.cc",
@@ -326,6 +372,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":http_server",
+        ":thrift_service",
         ":model_platform_types",
         ":platform_config_util",
         ":prediction_service_impl",

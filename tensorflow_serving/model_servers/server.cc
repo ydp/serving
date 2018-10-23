@@ -46,6 +46,8 @@ limitations under the License.
 #include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.pb.h"
 #include "tensorflow_serving/servables/tensorflow/session_bundle_config.pb.h"
 
+#include "tensorflow_serving/model_servers/thrift_service.h"
+
 namespace tensorflow {
 namespace serving {
 namespace main {
@@ -331,7 +333,7 @@ Status Server::BuildAndStart(const Options& server_options) {
     } else {
       brpc::ServerOptions brpc_options;
       brpc_options.idle_timeout_sec = -1;
-      brpc_options.thrift_service = new example::Echo2ServiceImpl;
+      brpc_options.thrift_service = new ThriftServiceImpl;
       if (brpc_server_->Start(server_options.brpc_port, &brpc_options) != 0) {
         LOG(INFO) << "Failed to start brpc server at port "
                    << server_options.brpc_port;
