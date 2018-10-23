@@ -53,9 +53,11 @@ limitations under the License.
 #include "tensorflow_serving/model_servers/server.h"
 #include "tensorflow_serving/model_servers/version.h"
 #include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.h"
+#include "tensorflow_serving/servables/feature/feature_source_adapter.h"
 
 int main(int argc, char** argv) {
   tensorflow::serving::loadHashmapServable();
+  tensorflow::serving::loadFeatureServable();
   tensorflow::serving::main::Server::Options options;
   bool display_version = false;
   std::vector<tensorflow::Flag> flag_list = {

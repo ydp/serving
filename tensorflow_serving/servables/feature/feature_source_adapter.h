@@ -13,6 +13,8 @@ namespace tensorflow {
 
 namespace serving {
 
+void loadFeatureServable();
+
 class FeatureSourceAdapter final
     : public SimpleLoaderSourceAdapter<StoragePath, 
                                        FeatureTransformer> {
@@ -21,6 +23,8 @@ class FeatureSourceAdapter final
   ~FeatureSourceAdapter() override;
 
  private:
+  friend class FeatureSourceAdapterCreator;
+
   TF_DISALLOW_COPY_AND_ASSIGN(FeatureSourceAdapter);
 };
 

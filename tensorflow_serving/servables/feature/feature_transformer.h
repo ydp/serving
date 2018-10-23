@@ -2,6 +2,7 @@
 #define TENSORFLOW_SERVING_SERVABLES_FEATURE_TRANSFORMER_
 
 #include <string>
+#include <vector>
 #include "tensorflow/core/lib/core/status.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "rapidjson/document.h"

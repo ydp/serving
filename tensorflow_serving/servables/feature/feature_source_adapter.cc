@@ -20,6 +20,11 @@ Status LoadFeaturesConf(const string& path,
 }
 } // namespace
 
+
+void loadFeatureServable() {
+  LOG(INFO) << "load feature servable...";
+}
+
 FeatureSourceAdapter::FeatureSourceAdapter(
     const FeatureSourceAdapterConfig& config)
     : SimpleLoaderSourceAdapter<StoragePath, FeatureTransformer>(
@@ -31,6 +36,23 @@ FeatureSourceAdapter::FeatureSourceAdapter(
                                   FeatureTransformer>::EstimateNoResources()) {}
 
 FeatureSourceAdapter::~FeatureSourceAdapter() { Detach(); }
+
+// register
+class FeatureSourceAdapterCreator {
+  public:
+    static Status Create(
+        const FeatureSourceAdapterConfig& config,
+        std::unique_ptr<SourceAdapter<StoragePath, std::unique_ptr<Loader>>>*
+            adapter) {
+      adapter->reset(new FeatureSourceAdapter(config));
+      return Status::OK();
+    }
+};
+
+REGISTER_STORAGE_PATH_SOURCE_ADAPTER(FeatureSourceAdapterCreator,
+                                     FeatureSourceAdapterConfig);
+
+
 
 } // serving
 

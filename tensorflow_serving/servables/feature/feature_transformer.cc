@@ -1,5 +1,4 @@
 #include "tensorflow_serving/servables/feature/feature_transformer.h"
-#include <vector>
 #include "tensorflow/core/lib/core/errors.h"
 #include "tensorflow/core/lib/io/path.h"
 #include "tensorflow/core/lib/io/inputbuffer.h"
