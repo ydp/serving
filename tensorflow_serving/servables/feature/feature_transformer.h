@@ -1,9 +1,9 @@
-#ifndef TENSORFLOW_SERVING_SERVABLES_TF_FEATURE_TRANSFORM_
-#define TENSORFLOW_SERVING_SERVABLES_TF_FEATURE_TRANSFORM_
+#ifndef TENSORFLOW_SERVING_SERVABLES_FEATURE_TRANSFORMER_
+#define TENSORFLOW_SERVING_SERVABLES_FEATURE_TRANSFORMER_
 
 #include <string>
-#include <unordered_map>
 #include "tensorflow/core/lib/core/status.h"
+#include "tensorflow/core/framework/tensor.h"
 #include "rapidjson/document.h"
 
 namespace tensorflow {
@@ -35,21 +35,24 @@ struct FeatureNode {
   string valuetype;
 };
 
-class TfFeatureTransform {
+class FeatureTransformer {
  public:
-  explicit TfFeatureTransform();
-  ~TfFeatureTransform();
+  explicit FeatureTransformer();
+  ~FeatureTransformer();
 
-  Status Load(string path);
-  Status ParseTfFeatureColumn(const rapidjson::Document& doc, FeatureNode& node);
+  Status LoadTfExampleConf(string path);
+  Status Transorm(const rapidjson::Document& doc,
+                  Tensor& example_tensor);
+ private:
+  Status ParseFeatureColumn(const rapidjson::Document& doc, FeatureNode& node);
   Status ParsePickcats(const rapidjson::Document& doc, FeatureNode& node);
 
  private:
-  std::unordered_map<string, FeatureNode> feature_nodes_;  
+  std::vector<FeatureNode> feature_nodes_;  
 };
 
 } // namespace serving
 } // namespace tensorflow
 
-#endif // TENSORFLOW_SERVING_SERVABLES_TF_FEATURE_TRANSFORM_
+#endif // TENSORFLOW_SERVING_SERVABLES_FEATURE_TRANSFORMER_
 

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package tensorflow.serving;
+
+message FeatureSourceAdapterConfig {
+  enum OutputType {
+    TF_EXAMPLE = 0;
+  }
+  // outputtype not outputType
+  OutputType outputtype = 1;
+}
+

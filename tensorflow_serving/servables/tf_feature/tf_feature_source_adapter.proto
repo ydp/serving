@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package tensorflow.serving;
-
-message TfFeaturesSourceAdapterConfig {
-  int64 feature_number = 0;
-}
-
