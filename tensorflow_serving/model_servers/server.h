@@ -29,6 +29,7 @@ limitations under the License.
 
 #include <brpc/server.h>
 #include "brpc/echo_c++/echo_service.h"
+#include "tensorflow_serving/model_servers/thrift_service.h"
 
 
 namespace tensorflow {
@@ -101,6 +102,7 @@ class Server {
   std::unique_ptr<net_http::HTTPServerInterface> http_server_;
   std::unique_ptr<brpc::Server> brpc_server_;
   std::unique_ptr<example::EchoServiceImpl> echo_service_;
+  std::unique_ptr<ThriftServiceImpl> thrift_service_;
 };
 
 }  // namespace main
