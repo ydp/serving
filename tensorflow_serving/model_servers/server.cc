@@ -332,7 +332,7 @@ Status Server::BuildAndStart(const Options& server_options) {
     } else {
       brpc::ServerOptions brpc_options;
       brpc_options.idle_timeout_sec = -1;
-      thrift_service_ = absl::make_unique<ThriftServiceImpl>();
+      thrift_service_ = absl::make_unique<ThriftServiceImpl>(server_core_.get());
       brpc_options.thrift_service = thrift_service_.get();
       if (brpc_server_->Start(server_options.brpc_port, &brpc_options) != 0) {
         LOG(INFO) << "Failed to start brpc server at port "

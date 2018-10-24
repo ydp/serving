@@ -4,7 +4,6 @@
 namespace tensorflow {
 namespace serving {
 
-ThriftServiceImpl::ThriftServiceImpl() {}
 
 ThriftServiceImpl::~ThriftServiceImpl() {}
 

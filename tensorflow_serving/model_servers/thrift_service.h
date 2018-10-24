@@ -11,6 +11,8 @@
 #include "tensorflow_serving/model_servers/gen-cpp/ServiceClassifyInterface_types.h"
 #include "tensorflow_serving/model_servers/gen-cpp/ServiceClassifyInterface_constants.h"
 
+#include "tensorflow_serving/model_servers/server_core.h"
+
 
 using namespace ServiceCommonInterface;
 using namespace ServiceClassifyInterface;
@@ -22,7 +24,8 @@ namespace serving {
 class ThriftServiceImpl : public brpc::ThriftService {
 
  public:
-  ThriftServiceImpl();
+  explicit ThriftServiceImpl(ServerCore* core)
+      : core_(core) {}
   virtual ~ThriftServiceImpl();
   void ProcessThriftFramedRequest(brpc::Controller* cntl,
                                   brpc::ThriftFramedMessage* req,
@@ -51,6 +54,9 @@ class ThriftServiceImpl : public brpc::ThriftService {
                const ServiceControlParam& param,
                google::protobuf::Closure* done);
 
+ private:
+  ServerCore* core_;
+  
 };
 
 } // namespace serving

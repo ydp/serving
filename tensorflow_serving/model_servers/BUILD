@@ -338,6 +338,7 @@ cc_library(
         "gen-cpp/ServiceClassifyInterface_constants.cpp",
     ],
     deps = [
+        ":server_core",
         "@com_github_brpc_brpc//:brpc",
     ],
     visibility = [
