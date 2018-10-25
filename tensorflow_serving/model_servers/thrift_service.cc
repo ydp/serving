@@ -1,6 +1,8 @@
 #include "tensorflow_serving/model_servers/thrift_service.h"
 #include "rapidjson/error/en.h"
 #include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include <rapidjson/writer.h>
 #include "tensorflow/cc/saved_model/loader.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow_serving/core/servable_handle.h"
@@ -70,21 +72,22 @@ void ThriftServiceImpl::classifyGet(brpc::Controller* cntl,
     return;
   }
 
+  rapidjson::Value::ConstMemberIterator numItr = doc.FindMember("num");
+  if (numItr == doc.MemberEnd()) {
+    _return->status = -1;
+    _return->value = "cannot find num field.";
+    LOG(ERROR) << "cannot find num field.";
+    return;
+  }
+  int num = atoi(numItr->value.GetString());
   rapidjson::Value::ConstMemberIterator it = doc.FindMember("model");
   if (it != doc.MemberEnd()) {
     ModelSpec model_spec;
     model_spec.set_name(it->value.GetString());
     ServableHandle<FeatureTransformer> bundle;
     core_->GetServableHandle(model_spec, &bundle);
-    rapidjson::Value::ConstMemberIterator input_field = doc.FindMember("input");
-    if (input_field == doc.MemberEnd()) {
-      _return->status = -1;
-      _return->value = "cannot find input field.";
-      LOG(ERROR) << "cannot find input field.";
-      return;
-    }
-    Tensor in_tensor(tensorflow::DT_STRING,
-                     tensorflow::TensorShape({(int)input_field->value.Size()}));
+
+    Tensor in_tensor(tensorflow::DT_STRING, tensorflow::TensorShape({num}));
     bundle->Transform(doc, in_tensor);
 
     model_spec.set_name("feed");
@@ -108,11 +111,37 @@ void ThriftServiceImpl::classifyGet(brpc::Controller* cntl,
     bundle2->session->Run(run_options, input_tensors,
                           output_tensor_names, {}, &outputs,
                           &run_metadata);
+    rapidjson::Document document;
+    document.SetObject();
+    char buf[64];
+    memset(buf, 0, 64);
+    int len = snprintf(buf, 64, "%d", param->type);
+    rapidjson::Value typeValue;
+    typeValue.SetString(buf, len, document.GetAllocator());
+    document.AddMember("type", typeValue, document.GetAllocator());
+    memset(buf, 0, 64);
+    len = snprintf(buf, 64, "%d", num);
+    rapidjson::Value numValue;
+    numValue.SetString(buf, len, document.GetAllocator());
+    document.AddMember("num", numValue, document.GetAllocator());
+    rapidjson::Value outputValue(rapidjson::kArrayType);
     for(Tensor& t : outputs) {
       // LOG(INFO) << t.DebugString();
+      rapidjson::Value val(rapidjson::kArrayType);
+      memset(buf, 0, 64);
+      len = snprintf(buf, 64, "%.16f", t.flat<float>()(1));
+      val.PushBack(rapidjson::Value(buf, len, document.GetAllocator()),
+                   document.GetAllocator());
+      outputValue.PushBack(val, document.GetAllocator());
     }
+    document.AddMember("output", outputValue, document.GetAllocator());
+    rapidjson::StringBuffer buffer;
+    buffer.Clear();
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    document.Accept(writer);
+    
     _return->status = 0;
-    _return->value = "{}";
+    _return->value = string(buffer.GetString());
   } else {
     _return->status = -1;
     _return->value = "input JSON cannot find model field.";
