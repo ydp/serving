@@ -339,6 +339,7 @@ cc_library(
     ],
     deps = [
         ":server_core",
+        "@com_google_absl//absl/strings",
         "@com_github_brpc_brpc//:brpc",
     ],
     visibility = [

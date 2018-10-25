@@ -8,6 +8,7 @@ namespace {
 Status LoadFeaturesConf(const string& path,
                         const FeatureSourceAdapterConfig::OutputType& outputtype,
                         std::unique_ptr<FeatureTransformer>* transformer) {
+  transformer->reset(new FeatureTransformer);
   switch (outputtype) {
     case FeatureSourceAdapterConfig::TF_EXAMPLE: {
         (*transformer)->LoadTfExampleConf(path);

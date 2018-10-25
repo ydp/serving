@@ -34,15 +34,18 @@ struct FeatureNode {
   string rowdelimiter;
   string coldelimiter;
   string valuetype;
+  FeatureNode() : defaultVal(DefaultValue()) {
+    name = "";
+  }
 };
 
 class FeatureTransformer {
  public:
-  explicit FeatureTransformer();
+  explicit FeatureTransformer() {}
   ~FeatureTransformer();
 
   Status LoadTfExampleConf(string path);
-  Status Transorm(const rapidjson::Document& doc,
+  Status Transform(const rapidjson::Document& doc,
                   Tensor& example_tensor);
  private:
   Status ParseFeatureColumn(const rapidjson::Document& doc, FeatureNode& node);

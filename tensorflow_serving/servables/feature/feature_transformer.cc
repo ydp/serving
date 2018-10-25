@@ -13,8 +13,6 @@ namespace tensorflow {
 
 namespace serving {
 
-FeatureTransformer::FeatureTransformer() {}
-
 FeatureTransformer::~FeatureTransformer() {}
 
 Status FeatureTransformer::LoadTfExampleConf(string path) {
@@ -32,7 +30,7 @@ Status FeatureTransformer::LoadTfExampleConf(string path) {
       if (cols.size() != 4) {
         return errors::InvalidArgument("features.conf not have 4 cols.");
       }
-      const string& name = cols[0];
+      const string& name = cols[0].substr(1);
       const string& opType = cols[1];
       const string& oper = cols[2];
       const string& args = cols[3];
@@ -72,12 +70,13 @@ Status FeatureTransformer::ParseFeatureColumn(const rapidjson::Document& doc,
   }
   itor = doc.FindMember("defaultin");
   if (itor != doc.MemberEnd()) {
+    const string& v = itor->value.GetString();
     if (node.dataType == "float") {
-      node.defaultVal.fval = itor->value.GetFloat();
+      node.defaultVal.fval = atof(v.c_str());
     } else if (node.dataType == "int") {
-      node.defaultVal.ival = itor->value.GetInt();
+      node.defaultVal.ival = atoi(v.c_str());
     } else if (node.dataType == "string") {
-      node.defaultVal.sval = itor->value.GetString();
+      node.defaultVal.sval = v;
     } else {
       return errors::InvalidArgument("unsupported data type.");
     }
@@ -108,25 +107,33 @@ Status FeatureTransformer::ParsePickcats(const rapidjson::Document& doc,
 }
 
 
-Status FeatureTransformer::Transorm(const rapidjson::Document& doc,
+Status FeatureTransformer::Transform(const rapidjson::Document& doc,
                                     Tensor& example_tensor) {
+  rapidjson::Value::ConstMemberIterator it = doc.FindMember("input");
+  if (it == doc.MemberEnd()) {
+    return errors::InvalidArgument("did not find input field.");
+  }
+  if (!it->value.IsArray()) {
+    return errors::InvalidArgument("input field is not an array.");
+  }
   rapidjson::Value::ConstMemberIterator itor;
-  for (rapidjson::Value::ConstValueIterator itr = doc.Begin();
-                                            itr != doc.End(); ++itr) {
-    const rapidjson::Value& sample = *itr;
+  for (rapidjson::SizeType i = 0; i < it->value.Size(); ++i) {
+    const rapidjson::Value& sample = it->value[i];
     Example example;
+    string str_example;
     auto features = example.mutable_features();
     for (auto& feature_def : feature_nodes_) {
       auto& fea = (*features->mutable_feature())[feature_def.name];
       itor = sample.FindMember(feature_def.name.c_str());
       if (itor != sample.MemberEnd()) {
+        const string& v = itor->value.GetString();
         if (feature_def.opType == "tffeaturecolumn") {
           if (feature_def.dataType == "int") {
-            fea.mutable_int64_list()->add_value(itor->value.GetInt());
+            fea.mutable_int64_list()->add_value(atoi(v.c_str()));
           } else if (feature_def.dataType == "float") {
-            fea.mutable_float_list()->add_value(itor->value.GetFloat());
+            fea.mutable_float_list()->add_value(atof(v.c_str()));
           } else if (feature_def.dataType == "string") {
-            fea.mutable_bytes_list()->add_value(itor->value.GetString());
+            fea.mutable_bytes_list()->add_value(v);
           }
         } else if (feature_def.opType == "pickcats") {
           // TODO
@@ -140,8 +147,13 @@ Status FeatureTransformer::Transorm(const rapidjson::Document& doc,
           fea.mutable_bytes_list()->add_value(feature_def.defaultVal.sval);
         }
       }
-    }  
-  }
+    }    // for feature_nodes_  
+    // LOG(INFO) << example.DebugString().c_str();
+    example.SerializeToString(&str_example);
+    example_tensor.flat<string>()(i) = str_example;
+    example.Clear();
+    str_example.clear();
+  }      // for it->value
   return Status::OK();
 }
 
