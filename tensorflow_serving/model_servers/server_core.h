@@ -181,6 +181,19 @@ class ServerCore : public Manager {
     return manager_->ListAvailableServableIds();
   }
 
+  std::string GetPlatformByModelName(string model_name) const {
+    const ModelServerConfig& config = options_.model_server_config;
+    if (config.has_model_config_list()) {
+      const ModelConfigList& config_list = config.model_config_list();
+      for (int i = 0; i < config_list.config_size(); ++i) {
+        if (config_list.config(i).name() == model_name) {
+          return config_list.config(i).model_platform();
+        }
+      }
+    }
+    return nullptr;
+  }
+
   /// Updates the server core with all the models and sources per the
   /// ModelServerConfig. Like Create(), waits for all statically configured
   /// servables to be made available before returning, and returns an error if
